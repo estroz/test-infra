@@ -1,3 +1,10 @@
+presets:
+- volumes:
+  - name: builder
+    emptyDir: {}
+  volumeMounts:
+  - name: builder
+    mountPath: /tmp
 presubmits:
   kubernetes-sigs/kubebuilder:
   - name: pull-kubebuilder-test
@@ -28,8 +35,15 @@ presubmits:
     - ^master$
     - ^feature/plugins-.+$
     spec:
+      # Build kubebuilder separately and mount the binary so go versions do not conflict.
+      initContainers:
+      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.19 # go1.15
+        command:
+        # see https://github.com/kubernetes/test-infra/blob/bb41c9ee91b50fffa843e2a6fbc0fe361999f682/config/prow/config.yaml#L590-L613
+        - runner.sh
+        - make build && mv ./bin/kubebuilder /tmp
       containers:
-      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.19
+      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.19 # go1.15
         command:
         # see https://github.com/kubernetes/test-infra/blob/bb41c9ee91b50fffa843e2a6fbc0fe361999f682/config/prow/config.yaml#L590-L613
         - runner.sh
@@ -59,7 +73,7 @@ presubmits:
     - ^feature/plugins-.+$
     spec:
       containers:
-      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.18
+      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.18 # go1.13
         command:
         # see https://github.com/kubernetes/test-infra/blob/bb41c9ee91b50fffa843e2a6fbc0fe361999f682/config/prow/config.yaml#L590-L613
         - runner.sh
@@ -89,7 +103,7 @@ presubmits:
     - ^feature/plugins-.+$
     spec:
       containers:
-      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.18
+      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.18 # go1.13
         command:
         # see https://github.com/kubernetes/test-infra/blob/bb41c9ee91b50fffa843e2a6fbc0fe361999f682/config/prow/config.yaml#L590-L613
         - runner.sh
@@ -119,7 +133,7 @@ presubmits:
     - ^feature/plugins-.+$
     spec:
       containers:
-      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.18
+      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.18 # go1.13
         command:
         # see https://github.com/kubernetes/test-infra/blob/bb41c9ee91b50fffa843e2a6fbc0fe361999f682/config/prow/config.yaml#L590-L613
         - runner.sh
@@ -149,7 +163,7 @@ presubmits:
     - ^feature/plugins-.+$
     spec:
       containers:
-      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.18
+      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.18 # go1.13
         command:
         # see https://github.com/kubernetes/test-infra/blob/bb41c9ee91b50fffa843e2a6fbc0fe361999f682/config/prow/config.yaml#L590-L613
         - runner.sh
@@ -179,7 +193,7 @@ presubmits:
     - ^feature/plugins-.+$
     spec:
       containers:
-      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.18
+      - image: gcr.io/k8s-testimages/kubekins-e2e:v20210302-a6bf478-1.18 # go1.13
         command:
         # see https://github.com/kubernetes/test-infra/blob/bb41c9ee91b50fffa843e2a6fbc0fe361999f682/config/prow/config.yaml#L590-L613
         - runner.sh
